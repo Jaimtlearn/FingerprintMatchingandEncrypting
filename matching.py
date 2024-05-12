@@ -1,10 +1,8 @@
 import os
 import cv2
+import time
 
-sample = cv2.imread("fingerprints/proj/2__F_Left_middle_finger.BMP")
 # sample = cv2.resize(sample, None, fx=4, fy=4)
-
-database_path = "fingerprints/proj"
 
 def MatchingFingerprint(sample,database_path):
     filename = None
@@ -32,6 +30,7 @@ def MatchingFingerprint(sample,database_path):
             filename = file
             image = fingerprint_image
             kp1,kp2,mp = keyp1,keyp2,match_point
+    return (filename, best_score, kp1, kp2, image, mp)
     
     # print("Best Match " + filename)
     # print("score " + str(best_score))
@@ -40,14 +39,24 @@ def MatchingFingerprint(sample,database_path):
     # cv2.imshow("Result",result)
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
-    return (filename, best_score, kp1, kp2, image, mp)
 
+# sample = cv2.imread("fingerprints/proj2/1__M_Left_index_finger_CR.BMP")
+database_path = "fingerprints/proj"
 
-return_obj = MatchingFingerprint(sample=sample,database_path=database_path)
+other_path = 'fingerprints/proj2/'
+start_time = time.time()
+accuracy = []
+for file in [file for file in os.listdir(other_path)][:30]:
+    sample = cv2.imread(other_path + file)
+    return_obj = MatchingFingerprint(sample=sample,database_path=database_path)
+    accuracy.append(return_obj[1])
+end_time = time.time()
 try:
     if return_obj[0] != None:
         print(f"Matched File Name : {return_obj[0]}")
         print(f"Accuracy : {return_obj[1]}")
+        print(accuracy)
+        print(f"Time taken : {end_time - start_time:.2f}")
     try:
         while True:
             inp = int(input("To see the result Enter 1, Enter 2 to break : "))
